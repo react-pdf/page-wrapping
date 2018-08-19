@@ -9,13 +9,13 @@ const wrap = (nodes, height) => {
   for (var i = 0; i < elements.length; i++) {
     const element = elements[i];
     const isElementOutside = height < element.y;
-    const elementBottom = element.y + element.height;
-    const shouldElementSplit = height < elementBottom;
+    const elementShouldSplit = height < element.y + element.height;
+    const elementShouldBreak = element.break || (!element.wrap && elementShouldSplit);
 
     if (isElementOutside) {
       element.y -= height;
       nextPageElements.push(element);
-    } else if (element.break) {
+    } else if (elementShouldBreak) {
       const futureElements = elements.slice(i + 1);
       futureElements.forEach(e => e.y -= element.y);
 
@@ -24,7 +24,7 @@ const wrap = (nodes, height) => {
 
       nextPageElements.push(element, ...futureElements);
       break;
-    } else if (shouldElementSplit) {
+    } else if (elementShouldSplit) {
       const clone = element.clone();
       const remainingHeight = height - element.y;
 

@@ -150,4 +150,33 @@ describe('page-wrapping', () => {
     expect(result[1][1].width).toBe(100);
     expect(result[1][1].height).toBe(40);
   });
+
+  test('Should ignore wrap flag if element should not split', () => {
+    const result = wrap(node({ x: 10, y: 10, width: 100, height: 100, wrap: false }), 200);
+
+    expect(result).toHaveLength(1);
+    expect(result[0][0].x).toBe(10);
+    expect(result[0][0].y).toBe(10);
+    expect(result[0][0].width).toBe(100);
+    expect(result[0][0].height).toBe(100);
+  });
+
+  test('Should not wrap element with flag as false', () => {
+    const result = wrap([
+      node({ x: 10, y: 10, width: 100, height: 70 }),
+      node({ x: 10, y: 80, width: 100, height: 70, wrap: false }),
+    ], 100);
+
+    expect(result).toHaveLength(2);
+    expect(result[0]).toHaveLength(1);
+    expect(result[0][0].x).toBe(10);
+    expect(result[0][0].y).toBe(10);
+    expect(result[0][0].width).toBe(100);
+    expect(result[0][0].height).toBe(70);
+    expect(result[1]).toHaveLength(1);
+    expect(result[1][0].x).toBe(10);
+    expect(result[1][0].y).toBe(0);
+    expect(result[1][0].width).toBe(100);
+    expect(result[1][0].height).toBe(70);
+  });
 });
