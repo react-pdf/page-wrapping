@@ -1,0 +1,7 @@
+node_modules
+*.log
+dist
+.jshintrc
+assets
+.idea
+.DS_Store
