@@ -1,5 +1,5 @@
 module.exports = {
   modulePathIgnorePatterns: ['/node_modules/'],
   moduleDirectories: ['node_modules'],
-  testRegex: 'test/.*?\\.js',
+  testRegex: 'test/index\\.js',
 };
