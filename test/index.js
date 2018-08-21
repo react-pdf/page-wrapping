@@ -179,4 +179,28 @@ describe('page-wrapping', () => {
     expect(result[1][0].width).toBe(100);
     expect(result[1][0].height).toBe(70);
   });
+
+  test('Should repeat fixed elements in all pages', () => {
+    const result = wrap([
+      node({ x: 10, y: 10, width: 100, height: 10, fixed: true }),
+      node({ x: 10, y: 20, width: 100, height: 130 }),
+    ], 60);
+
+    expect(result).toHaveLength(3);
+    expect(result[0]).toHaveLength(2);
+    expect(result[0][0].x).toBe(10);
+    expect(result[0][0].y).toBe(10);
+    expect(result[0][0].width).toBe(100);
+    expect(result[0][0].height).toBe(10);
+    expect(result[1]).toHaveLength(2);
+    expect(result[1][0].x).toBe(10);
+    expect(result[1][0].y).toBe(10);
+    expect(result[1][0].width).toBe(100);
+    expect(result[1][0].height).toBe(10);
+    expect(result[2]).toHaveLength(2);
+    expect(result[2][0].x).toBe(10);
+    expect(result[2][0].y).toBe(10);
+    expect(result[2][0].width).toBe(100);
+    expect(result[2][0].height).toBe(10);
+  })
 });

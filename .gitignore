@@ -5,3 +5,4 @@ dist
 assets
 .idea
 .DS_Store
+coverage

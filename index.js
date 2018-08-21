@@ -1,7 +1,8 @@
-const wrap = (nodes, height) => {
-  const elements = !nodes || Array.isArray(nodes) ? nodes : [nodes];
+const wrap = (nodes = [], height) => {
+  const elements = Array.isArray(nodes) ? nodes : [nodes];
+  const nonFixedElements = elements.filter(element => element && !element.fixed);
 
-  if (!elements || elements.length === 0) return [];
+  if (nonFixedElements.length === 0) return [];
 
   const currentPage = [];
   const nextPageElements = [];
@@ -12,7 +13,12 @@ const wrap = (nodes, height) => {
     const elementShouldSplit = height < element.y + element.height;
     const elementShouldBreak = element.break || (!element.wrap && elementShouldSplit);
 
-    if (isElementOutside) {
+    if (element.calculateLayout) element.calculateLayout();
+
+    if (element.fixed) {
+      currentPage.push(element.clone());
+      nextPageElements.push(element);
+    } else if (isElementOutside) {
       element.y -= height;
       nextPageElements.push(element);
     } else if (elementShouldBreak) {
