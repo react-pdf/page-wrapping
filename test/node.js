@@ -5,6 +5,7 @@ const node = (params) => ({
   height: params.height,
   break: params.break || false,
   fixed: params.fixed || false,
+  onNodeWrap: params.onNodeWrap || null,
   wrap: params.wrap === undefined ? true : params.wrap,
   clone() {
     return node(this);

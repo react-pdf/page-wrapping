@@ -13,7 +13,7 @@ const wrap = (nodes = [], height) => {
     const elementShouldSplit = height < element.y + element.height;
     const elementShouldBreak = element.break || (!element.wrap && elementShouldSplit);
 
-    if (element.calculateLayout) element.calculateLayout();
+    if (element.onNodeWrap) element.onNodeWrap();
 
     if (element.fixed) {
       currentPage.push(element.clone());

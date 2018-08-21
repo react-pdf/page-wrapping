@@ -25,12 +25,14 @@ wrap([node], 40);
 
 ## Node interface
 
-| Property | Description                                           | Type     |
-| -------- | ----------------------------------------------------- | -------- |
-| x        | Node x coordinate                                     | Number   |
-| y        | Node y coordinate                                     | Number   |
-| width    | Node width                                            | Number   |
-| height   | Node height                                           | Number   |
-| wrap     | Whether a node should be able to split in two or more | Boolean  |
-| break    | Whether a node should create a page break             | Boolean  |
-| clone    | Returns a copy of target node                         | Function |
+| Property        | Description                                           | Type     |
+| --------------- | ----------------------------------------------------- | -------- |
+| x               | Node x coordinate                                     | Number   |
+| y               | Node y coordinate                                     | Number   |
+| width           | Node width                                            | Number   |
+| height          | Node height                                           | Number   |
+| wrap            | Whether a node should be able to split in two or more | Boolean  |
+| break           | Whether a node should create a page break             | Boolean  |
+| fixed           | Whether a node should repeat throughout all pages     | Boolean  |
+| clone           | Returns a copy of target node                         | Function |
+| onNodeWrap      | Callback before element wrap                          | Function |

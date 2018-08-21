@@ -202,5 +202,25 @@ describe('page-wrapping', () => {
     expect(result[2][0].y).toBe(10);
     expect(result[2][0].width).toBe(100);
     expect(result[2][0].height).toBe(10);
-  })
+  });
+
+  test('Should call onNodeWrap on node if passed', () => {
+    const onNodeWrap = jest.fn();
+    const result = wrap([
+      node({ x: 10, y: 10, width: 100, height: 10 }),
+      node({ x: 10, y: 20, width: 100, height: 40, onNodeWrap }),
+    ], 60);
+
+    expect(onNodeWrap.mock.calls.length).toBe(1);
+  });
+
+  test('Should call onNodeWrap one time per output page', () => {
+    const onNodeWrap = jest.fn();
+    const result = wrap([
+      node({ x: 10, y: 10, width: 100, height: 10 }),
+      node({ x: 10, y: 20, width: 100, height: 130, onNodeWrap }),
+    ], 60);
+
+    expect(onNodeWrap.mock.calls.length).toBe(3);
+  });
 });
