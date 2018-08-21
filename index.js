@@ -1,3 +1,21 @@
+const defaultPresenceAhead = element => height => Math.min(element.height, height);
+
+const getPresenceAhead = (elements, height) => {
+  let result = 0;
+
+  for (var i = 0; i < elements.length; i++) {
+    const element = elements[i];
+    const isElementInside = height > element.y;
+    const presenceAhead = element.presenceAhead || defaultPresenceAhead(element);
+
+    if (element && isElementInside) {
+      result += presenceAhead(height - element.y);
+    }
+  }
+
+  return result;
+}
+
 const wrap = (nodes = [], height) => {
   const elements = Array.isArray(nodes) ? nodes : [nodes];
   const nonFixedElements = elements.filter(element => element && !element.fixed);
@@ -18,10 +36,16 @@ const wrap = (nodes = [], height) => {
     if (element.fixed) {
       currentPage.push(element.clone());
       nextPageElements.push(element);
-    } else if (isElementOutside) {
+      continue;
+    }
+
+    if (isElementOutside) {
       element.y -= height;
       nextPageElements.push(element);
-    } else if (elementShouldBreak) {
+      continue;
+    }
+
+    if (elementShouldBreak) {
       const futureElements = elements.slice(i + 1);
       futureElements.forEach(e => e.y -= element.y);
 
@@ -30,7 +54,24 @@ const wrap = (nodes = [], height) => {
 
       nextPageElements.push(element, ...futureElements);
       break;
-    } else if (elementShouldSplit) {
+    }
+
+    if (element.minPresenceAhead) {
+      const futureElements = elements.slice(i + 1);
+      const presenceAhead = getPresenceAhead(futureElements, height);
+
+      if (presenceAhead < element.minPresenceAhead) {
+        futureElements.forEach(e => e.y -= element.y);
+
+        element.y = 0;
+        element.break = false;
+
+        nextPageElements.push(element, ...futureElements);
+        break;
+      }
+    }
+
+    if (elementShouldSplit) {
       const clone = element.clone();
       const remainingHeight = height - element.y;
 
@@ -40,9 +81,10 @@ const wrap = (nodes = [], height) => {
 
       currentPage.push(clone);
       nextPageElements.push(element);
-    } else {
-      currentPage.push(element.clone());
+      continue;
     }
+
+    currentPage.push(element.clone());
   }
 
   return [currentPage, ...wrap(nextPageElements, height)];

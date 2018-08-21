@@ -217,10 +217,33 @@ describe('page-wrapping', () => {
   test('Should call onNodeWrap one time per output page', () => {
     const onNodeWrap = jest.fn();
     const result = wrap([
-      node({ x: 10, y: 10, width: 100, height: 10 }),
-      node({ x: 10, y: 20, width: 100, height: 130, onNodeWrap }),
+      node({ x: 10, y: 10, width: 100, height: 130, onNodeWrap }),
     ], 60);
 
     expect(onNodeWrap.mock.calls.length).toBe(3);
+  });
+
+  test('Should break element if not enough space ahead', () => {
+    const result = wrap([
+      node({ x: 10, y: 0, width: 100, height: 10 }),
+      node({ x: 10, y: 10, width: 100, height: 30, minPresenceAhead: 30 }),
+      node({ x: 10, y: 40, width: 100, height: 40 }),
+    ], 60);
+
+    expect(result).toHaveLength(3);
+    expect(result[0]).toHaveLength(1);
+    expect(result[0][0].x).toBe(10);
+    expect(result[0][0].y).toBe(0);
+    expect(result[0][0].width).toBe(100);
+    expect(result[0][0].height).toBe(10);
+    expect(result[1]).toHaveLength(2);
+    expect(result[1][0].x).toBe(10);
+    expect(result[1][0].y).toBe(0);
+    expect(result[1][0].width).toBe(100);
+    expect(result[1][0].height).toBe(30);
+    expect(result[1][1].x).toBe(10);
+    expect(result[1][1].y).toBe(30);
+    expect(result[1][1].width).toBe(100);
+    expect(result[1][1].height).toBe(30);
   });
 });
