@@ -36,3 +36,4 @@ wrap([node], 40);
 | fixed           | Whether a node should repeat throughout all pages     | Boolean  |
 | clone           | Returns a copy of target node                         | Function |
 | onNodeWrap      | Callback before element wrap                          | Function |
+| presenceAhead   | Returns node presence ahead given available height    | Function |

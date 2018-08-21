@@ -21,6 +21,16 @@ describe('page-wrapping', () => {
     expect(result[0][0]).not.toEqual(input);
   });
 
+  test('Should not edit passed input', () => {
+    const input = node({ x: 20, y: 20, width: 100, height: 100 });
+    const result = wrap(input, 60);
+
+    expect(input.x).toBe(20);
+    expect(input.y).toBe(20);
+    expect(input.width).toBe(100);
+    expect(input.height).toBe(100);
+  });
+
   test('Should wrap single object on bigger space', () => {
     const result = wrap(node({ x: 10, y: 10, width: 100, height: 100 }), 200);
 
