@@ -1,5 +1,5 @@
 import node from './node';
-import wrap from '../index';
+import wrapPages, { wrap } from '../index';
 
 describe('page-wrapping', () => {
   test('Wrap should return empty array if no nodes passed', () => {
@@ -34,7 +34,6 @@ describe('page-wrapping', () => {
   test('Should wrap single object on bigger space', () => {
     const result = wrap(node({ x: 10, y: 10, width: 100, height: 100 }), 200);
 
-    expect(result).toHaveLength(1);
     expect(result[0][0].x).toBe(10);
     expect(result[0][0].y).toBe(10);
     expect(result[0][0].width).toBe(100);
@@ -44,7 +43,6 @@ describe('page-wrapping', () => {
   test('Should wrap single object on smaller space', () => {
     const result = wrap(node({ x: 20, y: 20, width: 100, height: 100 }), 60);
 
-    expect(result).toHaveLength(2);
     expect(result[0][0].x).toBe(20);
     expect(result[0][0].y).toBe(20);
     expect(result[0][0].width).toBe(100);
@@ -56,7 +54,7 @@ describe('page-wrapping', () => {
   });
 
   test('Should wrap single object on smaller space in many pieces', () => {
-    const result = wrap(node({ x: 20, y: 20, width: 100, height: 100 }), 40);
+    const result = wrapPages(node({ x: 20, y: 20, width: 100, height: 100 }), 40);
 
     expect(result).toHaveLength(3);
     expect(result[0][0].x).toBe(20);
@@ -76,7 +74,6 @@ describe('page-wrapping', () => {
   test('Should wrap single object outside first page', () => {
     const result = wrap(node({ x: 20, y: 80, width: 100, height: 10 }), 60);
 
-    expect(result).toHaveLength(2);
     expect(result[0]).toHaveLength(0);
     expect(result[1][0].x).toBe(20);
     expect(result[1][0].y).toBe(20);
@@ -90,7 +87,6 @@ describe('page-wrapping', () => {
       node({ x: 50, y: 10, width: 50, height: 100 })
     ], 200);
 
-    expect(result).toHaveLength(1);
     expect(result[0][0].x).toBe(0);
     expect(result[0][0].y).toBe(10);
     expect(result[0][0].width).toBe(50);
@@ -107,7 +103,6 @@ describe('page-wrapping', () => {
       node({ x: 50, y: 10, width: 50, height: 100 })
     ], 70);
 
-    expect(result).toHaveLength(2);
     expect(result[0][0].x).toBe(0);
     expect(result[0][0].y).toBe(10);
     expect(result[0][0].width).toBe(50);
@@ -129,7 +124,6 @@ describe('page-wrapping', () => {
   test('Should break element on its own', () => {
     const result = wrap(node({ x: 0, y: 10, width: 50, height: 50, break: true }), 70);
 
-    expect(result).toHaveLength(2);
     expect(result[0]).toHaveLength(0);
     expect(result[1][0].x).toBe(0);
     expect(result[1][0].y).toBe(0);
@@ -144,7 +138,6 @@ describe('page-wrapping', () => {
       node({ x: 0, y: 80, width: 100, height: 40 })
     ], 70);
 
-    expect(result).toHaveLength(2);
     expect(result[0]).toHaveLength(1);
     expect(result[0][0].x).toBe(0);
     expect(result[0][0].y).toBe(10);
@@ -164,7 +157,6 @@ describe('page-wrapping', () => {
   test('Should ignore wrap flag if element should not split', () => {
     const result = wrap(node({ x: 10, y: 10, width: 100, height: 100, wrap: false }), 200);
 
-    expect(result).toHaveLength(1);
     expect(result[0][0].x).toBe(10);
     expect(result[0][0].y).toBe(10);
     expect(result[0][0].width).toBe(100);
@@ -177,7 +169,6 @@ describe('page-wrapping', () => {
       node({ x: 10, y: 80, width: 100, height: 70, wrap: false }),
     ], 100);
 
-    expect(result).toHaveLength(2);
     expect(result[0]).toHaveLength(1);
     expect(result[0][0].x).toBe(10);
     expect(result[0][0].y).toBe(10);
@@ -196,22 +187,18 @@ describe('page-wrapping', () => {
       node({ x: 10, y: 20, width: 100, height: 130 }),
     ], 60);
 
-    expect(result).toHaveLength(3);
     expect(result[0]).toHaveLength(2);
     expect(result[0][0].x).toBe(10);
     expect(result[0][0].y).toBe(10);
     expect(result[0][0].width).toBe(100);
     expect(result[0][0].height).toBe(10);
+    expect(result[0][0].fixed).toBe(true);
     expect(result[1]).toHaveLength(2);
     expect(result[1][0].x).toBe(10);
     expect(result[1][0].y).toBe(10);
     expect(result[1][0].width).toBe(100);
     expect(result[1][0].height).toBe(10);
-    expect(result[2]).toHaveLength(2);
-    expect(result[2][0].x).toBe(10);
-    expect(result[2][0].y).toBe(10);
-    expect(result[2][0].width).toBe(100);
-    expect(result[2][0].height).toBe(10);
+    expect(result[1][0].fixed).toBe(true);
   });
 
   test('Should call onNodeWrap on node if passed', () => {
@@ -226,11 +213,11 @@ describe('page-wrapping', () => {
 
   test('Should call onNodeWrap one time per output page', () => {
     const onNodeWrap = jest.fn();
-    const result = wrap([
-      node({ x: 10, y: 10, width: 100, height: 130, onNodeWrap }),
+    const result = wrapPages([
+      node({ x: 10, y: 10, width: 100, height: 200, onNodeWrap }),
     ], 60);
 
-    expect(onNodeWrap.mock.calls.length).toBe(3);
+    expect(onNodeWrap.mock.calls.length).toBe(4);
   });
 
   test('Should break element if not enough space ahead', () => {
@@ -240,7 +227,6 @@ describe('page-wrapping', () => {
       node({ x: 10, y: 40, width: 100, height: 40 }),
     ], 60);
 
-    expect(result).toHaveLength(3);
     expect(result[0]).toHaveLength(1);
     expect(result[0][0].x).toBe(10);
     expect(result[0][0].y).toBe(0);
@@ -254,6 +240,49 @@ describe('page-wrapping', () => {
     expect(result[1][1].x).toBe(10);
     expect(result[1][1].y).toBe(30);
     expect(result[1][1].width).toBe(100);
-    expect(result[1][1].height).toBe(30);
+    expect(result[1][1].height).toBe(40);
+  });
+
+  test('Should wrap nested object on bigger space', () => {
+    const result = wrap(
+      node({ x: 10, y: 10, width: 100, height: 100, children: [
+        node({ x: 10, y: 10, width: 100, height: 50 })
+      ]})
+    , 200);
+
+    expect(result[0][0].children).toHaveLength(1);
+    expect(result[0][0].x).toBe(10);
+    expect(result[0][0].y).toBe(10);
+    expect(result[0][0].width).toBe(100);
+    expect(result[0][0].height).toBe(100);
+    expect(result[0][0].children[0].x).toBe(10);
+    expect(result[0][0].children[0].y).toBe(10);
+    expect(result[0][0].children[0].width).toBe(100);
+    expect(result[0][0].children[0].height).toBe(50);
+  });
+
+  test('Should wrap single object on smaller space', () => {
+    const result = wrap(
+      node({ x: 10, y: 10, width: 100, height: 100, children: [
+        node({ x: 10, y: 10, width: 100, height: 70 })
+      ]})
+    , 70);
+
+    expect(result[0][0].x).toBe(10);
+    expect(result[0][0].y).toBe(10);
+    expect(result[0][0].width).toBe(100);
+    expect(result[0][0].height).toBe(60);
+    expect(result[0][0].children[0].x).toBe(10);
+    expect(result[0][0].children[0].y).toBe(10);
+    expect(result[0][0].children[0].width).toBe(100);
+    expect(result[0][0].children[0].height).toBe(60);
+    expect(result[1][0].x).toBe(10);
+    expect(result[1][0].y).toBe(0);
+    expect(result[1][0].width).toBe(100);
+    expect(result[1][0].height).toBe(40);
+    expect(result[1][0].children[0].x).toBe(10);
+    expect(result[1][0].children[0].y).toBe(0);
+    expect(result[1][0].children[0].width).toBe(100);
+    expect(result[1][0].children[0].height).toBe(10);
   });
 });

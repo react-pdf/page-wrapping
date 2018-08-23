@@ -18,8 +18,8 @@ const getPresenceAhead = (elements, height) => {
   return result;
 }
 
-// Wrap nodes tree in equal sized subpages
-const wrap = (nodes = [], height) => {
+// Wrap nodes tree in fixed height page, and returns exceedings separately.
+export const wrap = (nodes = [], height) => {
   const elements = Array.isArray(nodes) ? nodes : [nodes];
   const nonFixedElements = elements.filter(element => element && !element.fixed);
 
@@ -88,6 +88,12 @@ const wrap = (nodes = [], height) => {
       clone.height = remainingHeight;
       element.height = element.height - remainingHeight;
 
+      if (element.children) {
+        const wrappedChildren = wrap(element.children, height)
+        clone.children = wrappedChildren[0];
+        element.children = wrappedChildren[1];
+      }
+
       currentPage.push(clone);
       nextPageElements.push(element);
       continue;
@@ -97,8 +103,16 @@ const wrap = (nodes = [], height) => {
     currentPage.push(element);
   }
 
-  // Recursively wrap all pages until all elements are covered
-  return [currentPage, ...wrap(nextPageElements, height)];
+  return [currentPage, nextPageElements];
 }
 
-export default wrap;
+// Wrap nodes tree in equal sized subpages
+const wrapPages = (nodes = [], height) => {
+  const [currentPage, nextPageElements] = wrap(nodes, height);
+
+  if (nextPageElements.length === 0) return [currentPage];
+
+  return [currentPage, ...wrapPages(nextPageElements, height)];
+}
+
+export default wrapPages;
