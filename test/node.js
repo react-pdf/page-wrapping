@@ -10,7 +10,9 @@ const node = (params) => ({
   minPresenceAhead: params.minPresenceAhead || null,
   wrap: params.wrap === undefined ? true : params.wrap,
   clone() {
-    return node(this);
+    const clone = node(this);
+    clone.children = clone.children.map(c => c.clone());
+    return clone;
   }
 });
 

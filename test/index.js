@@ -1,29 +1,29 @@
 import node from './node';
-import wrapPages, { wrap } from '../index';
+import wrapPages, { moveNodes } from '../index';
 
 describe('page-wrapping', () => {
   test('Wrap should return empty array if no nodes passed', () => {
-    const result = wrap(null, 200);
+    const result = wrapPages(null, 200);
 
     expect(result).toHaveLength(0);
   });
 
   test('Wrap should return empty array if empty nodes passed', () => {
-    const result = wrap([], 200);
+    const result = wrapPages([], 200);
 
     expect(result).toHaveLength(0);
   });
 
   test('Wrap should return copy of input node', () => {
     const input = node({ x: 0, y: 0, width: 100, height: 100 });
-    const result = wrap(input, 200);
+    const result = wrapPages(input, 200);
 
     expect(result[0][0]).not.toEqual(input);
   });
 
   test('Should not edit passed input', () => {
     const input = node({ x: 20, y: 20, width: 100, height: 100 });
-    const result = wrap(input, 60);
+    const result = wrapPages(input, 60);
 
     expect(input.x).toBe(20);
     expect(input.y).toBe(20);
@@ -32,7 +32,7 @@ describe('page-wrapping', () => {
   });
 
   test('Should wrap single object on bigger space', () => {
-    const result = wrap(node({ x: 10, y: 10, width: 100, height: 100 }), 200);
+    const result = wrapPages(node({ x: 10, y: 10, width: 100, height: 100 }), 200);
 
     expect(result[0][0].x).toBe(10);
     expect(result[0][0].y).toBe(10);
@@ -41,7 +41,7 @@ describe('page-wrapping', () => {
   });
 
   test('Should wrap single object on smaller space', () => {
-    const result = wrap(node({ x: 20, y: 20, width: 100, height: 100 }), 60);
+    const result = wrapPages(node({ x: 20, y: 20, width: 100, height: 100 }), 60);
 
     expect(result[0][0].x).toBe(20);
     expect(result[0][0].y).toBe(20);
@@ -72,7 +72,7 @@ describe('page-wrapping', () => {
   });
 
   test('Should wrap single object outside first page', () => {
-    const result = wrap(node({ x: 20, y: 80, width: 100, height: 10 }), 60);
+    const result = wrapPages(node({ x: 20, y: 80, width: 100, height: 10 }), 60);
 
     expect(result[0]).toHaveLength(0);
     expect(result[1][0].x).toBe(20);
@@ -82,7 +82,7 @@ describe('page-wrapping', () => {
   });
 
   test('Should wrap many horizontal aligned object on bigger space', () => {
-    const result = wrap([
+    const result = wrapPages([
       node({ x: 0, y: 10, width: 50, height: 100 }),
       node({ x: 50, y: 10, width: 50, height: 100 })
     ], 200);
@@ -98,7 +98,7 @@ describe('page-wrapping', () => {
   });
 
   test('Should wrap many horizontal aligned object on smaller space', () => {
-    const result = wrap([
+    const result = wrapPages([
       node({ x: 0, y: 10, width: 50, height: 100 }),
       node({ x: 50, y: 10, width: 50, height: 100 })
     ], 70);
@@ -122,7 +122,7 @@ describe('page-wrapping', () => {
   });
 
   test('Should break element on its own', () => {
-    const result = wrap(node({ x: 0, y: 10, width: 50, height: 50, break: true }), 70);
+    const result = wrapPages(node({ x: 0, y: 10, width: 50, height: 50, break: true }), 70);
 
     expect(result[0]).toHaveLength(0);
     expect(result[1][0].x).toBe(0);
@@ -132,7 +132,7 @@ describe('page-wrapping', () => {
   });
 
   test('Should break element with others', () => {
-    const result = wrap([
+    const result = wrapPages([
       node({ x: 0, y: 10, width: 100, height: 50 }),
       node({ x: 0, y: 60, width: 100, height: 20, break: true }),
       node({ x: 0, y: 80, width: 100, height: 40 })
@@ -155,7 +155,7 @@ describe('page-wrapping', () => {
   });
 
   test('Should ignore wrap flag if element should not split', () => {
-    const result = wrap(node({ x: 10, y: 10, width: 100, height: 100, wrap: false }), 200);
+    const result = wrapPages(node({ x: 10, y: 10, width: 100, height: 100, wrap: false }), 200);
 
     expect(result[0][0].x).toBe(10);
     expect(result[0][0].y).toBe(10);
@@ -164,7 +164,7 @@ describe('page-wrapping', () => {
   });
 
   test('Should not wrap element with flag as false', () => {
-    const result = wrap([
+    const result = wrapPages([
       node({ x: 10, y: 10, width: 100, height: 70 }),
       node({ x: 10, y: 80, width: 100, height: 70, wrap: false }),
     ], 100);
@@ -182,7 +182,7 @@ describe('page-wrapping', () => {
   });
 
   test('Should repeat fixed elements in all pages', () => {
-    const result = wrap([
+    const result = wrapPages([
       node({ x: 10, y: 10, width: 100, height: 10, fixed: true }),
       node({ x: 10, y: 20, width: 100, height: 130 }),
     ], 60);
@@ -203,7 +203,7 @@ describe('page-wrapping', () => {
 
   test('Should call onNodeWrap on node if passed', () => {
     const onNodeWrap = jest.fn();
-    const result = wrap([
+    const result = wrapPages([
       node({ x: 10, y: 10, width: 100, height: 10 }),
       node({ x: 10, y: 20, width: 100, height: 40, onNodeWrap }),
     ], 60);
@@ -221,7 +221,7 @@ describe('page-wrapping', () => {
   });
 
   test('Should break element if not enough space ahead', () => {
-    const result = wrap([
+    const result = wrapPages([
       node({ x: 10, y: 0, width: 100, height: 10 }),
       node({ x: 10, y: 10, width: 100, height: 30, minPresenceAhead: 30 }),
       node({ x: 10, y: 40, width: 100, height: 40 }),
@@ -240,11 +240,11 @@ describe('page-wrapping', () => {
     expect(result[1][1].x).toBe(10);
     expect(result[1][1].y).toBe(30);
     expect(result[1][1].width).toBe(100);
-    expect(result[1][1].height).toBe(40);
+    expect(result[1][1].height).toBe(30);
   });
 
   test('Should wrap nested object on bigger space', () => {
-    const result = wrap(
+    const result = wrapPages(
       node({ x: 10, y: 10, width: 100, height: 100, children: [
         node({ x: 10, y: 10, width: 100, height: 50 })
       ]})
@@ -262,7 +262,7 @@ describe('page-wrapping', () => {
   });
 
   test('Should wrap single object on smaller space', () => {
-    const result = wrap(
+    const result = wrapPages(
       node({ x: 10, y: 10, width: 100, height: 100, children: [
         node({ x: 10, y: 10, width: 100, height: 70 })
       ]})
@@ -284,5 +284,16 @@ describe('page-wrapping', () => {
     expect(result[1][0].children[0].y).toBe(0);
     expect(result[1][0].children[0].width).toBe(100);
     expect(result[1][0].children[0].height).toBe(10);
+  });
+
+  test('Should move nodes up', () => {
+    const input = node({ x: 10, y: 40, width: 100, height: 100, children: [
+      node({ x: 10, y: 50, width: 100, height: 50 })
+    ]});
+
+    moveNodes(input, -30);
+
+    expect(input.y).toBe(10);
+    expect(input.children[0].y).toBe(20);
   });
 });

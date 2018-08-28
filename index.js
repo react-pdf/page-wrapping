@@ -18,23 +18,30 @@ const getPresenceAhead = (elements, height) => {
   return result;
 }
 
-// Wrap nodes tree in fixed height page, and returns exceedings separately.
-export const wrap = (nodes = [], height) => {
-  const elements = Array.isArray(nodes) ? nodes : [nodes];
-  const nonFixedElements = elements.filter(element => element && !element.fixed);
+// Moves element (and his children) vertically
+export const moveNodes = (nodes = [], offset) => {
+  if (nodes.length === 0) return;
 
-  // Fixed elements should repeat throughout all pages, so we filter them
-  // in order to know if we should prevent nodes tree to wrap.
-  if (nonFixedElements.length === 0) return [];
+  const elements = Array.isArray(nodes) ? nodes : [nodes];
+
+  elements.forEach(element => {
+    element.y += offset;
+    moveNodes(element.children, offset);
+  });
+}
+
+// Wrap nodes tree in fixed height page, and returns exceedings separately.
+export const wrap = (nodes, height) => {
+  const elements = Array.isArray(nodes) ? nodes : [nodes];
 
   // Keep track of this and future pages elements
   const currentPage = [];
   const nextPageElements = [];
 
   for (var i = 0; i < elements.length; i++) {
-    const element = elements[i].clone();
+    const element = elements[i];
     const futureElements = elements.slice(i + 1);
-    const isElementOutside = height < element.y;
+    const isElementOutside = height <= element.y;
     const elementShouldSplit = height < element.y + element.height;
     let elementShouldBreak = element.break || (!element.wrap && elementShouldSplit);
 
@@ -51,7 +58,9 @@ export const wrap = (nodes = [], height) => {
     // If current element is outside wrapping zone, we ignore it completely.
     // Just substract page height so next time will be upper in the page's layout.
     if (isElementOutside) {
-      element.y -= height;
+      moveNodes(element, -height);
+      // element.y -= height;
+      // element.children.forEach(c => c.y -= height);
       nextPageElements.push(element);
       continue;
     }
@@ -68,9 +77,8 @@ export const wrap = (nodes = [], height) => {
     // presence ahead. Either way, the element get's relocated on the next page,
     // as well as all other next elements.
     if (elementShouldBreak) {
-      futureElements.forEach(e => e.y -= element.y);
-
-      element.y = 0;
+      moveNodes(futureElements, -element.y);
+      moveNodes(element, -element.y);
       element.break = false;
 
       nextPageElements.push(element, ...futureElements);
@@ -86,7 +94,7 @@ export const wrap = (nodes = [], height) => {
 
       element.y = 0;
       clone.height = remainingHeight;
-      element.height = element.height - remainingHeight;
+      element.height -= remainingHeight;
 
       if (element.children) {
         const wrappedChildren = wrap(element.children, height)
@@ -108,9 +116,15 @@ export const wrap = (nodes = [], height) => {
 
 // Wrap nodes tree in equal sized subpages
 const wrapPages = (nodes = [], height) => {
-  const [currentPage, nextPageElements] = wrap(nodes, height);
+  if (!nodes || nodes.length === 0) return [];
 
-  if (nextPageElements.length === 0) return [currentPage];
+  const elements = Array.isArray(nodes) ? nodes.map(node => node.clone()) : nodes.clone();
+  const [currentPage, nextPageElements] = wrap(elements, height);
+  const nonFixedElements = nextPageElements.filter(element => element && !element.fixed);
+
+  // Fixed elements should repeat throughout all pages, so we filter them
+  // in order to know if we should prevent nodes tree to wrap.
+  if (nonFixedElements.length === 0) return [currentPage];
 
   return [currentPage, ...wrapPages(nextPageElements, height)];
 }
