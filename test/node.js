@@ -23,6 +23,11 @@ const node = (params) => ({
       minPresenceAhead: this.minPresenceAhead
     });
   },
+  onNodeSplit(height, clone) {
+    clone.top = 0;
+    clone.height -= height;
+    this.height = height;
+  },
   appendChild(child) {
     child.parent = this;
     this.children.push(child);

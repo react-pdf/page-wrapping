@@ -30,13 +30,9 @@ const cloneRecursively = (node) => {
 }
 
 // Wrap nodes tree in fixed height page, and returns exceedings separately.
-export const wrap = (nodes, height) => {
-  const currentPage = [];
+export const wrap = (elements, height) => {
   const nextPageElements = [];
   const elementsToBeRemoved = [];
-
-  // Transform nodes into an array
-  const elements = Array.isArray(nodes) ? nodes : [nodes];
 
   for (var i = 0; i < elements.length; i++) {
     const element = elements[i];
@@ -95,47 +91,33 @@ export const wrap = (nodes, height) => {
 
       if (element.children && element.children.length > 0) {
         const wrappedChildren = wrap(element.children, remainingHeight);
-        wrappedChildren[1].forEach(child => clone.appendChild(child));
+        wrappedChildren.forEach(child => clone.appendChild(child));
       }
 
-      element.onNodeSplit ? element.onNodeSplit(height, clone) : {};
-
-      clone.top = 0;
-      clone.height -= remainingHeight;
-      element.height = remainingHeight;
-
-      currentPage.push(element);
+      element.onNodeSplit(remainingHeight, clone);
       nextPageElements.push(clone);
 
       continue;
     }
-
-    // Elements suits perfectly inside subpage, and is added is it is.
-    currentPage.push(element);
   }
 
   // Remove elements that didn't fit inside page
   // We do this here to not interfer with upper elements iteration
   elementsToBeRemoved.forEach(element => element.remove());
 
-  return [currentPage, nextPageElements];
+  return nextPageElements;
 }
 
 // Wrap nodes tree in equal sized subpages
 const wrapPages = (nodes, height) => {
-  const [currentPage, nextPageElements] = wrap(nodes, height);
-  const nonFixedElements = nextPageElements.filter(element => element && !element.fixed);
-
-  // Fixed elements should repeat throughout all pages, so we filter them
-  // in order to know if we should prevent nodes tree to wrap.
-  if (nonFixedElements.length === 0) return currentPage;
-
-  return [...currentPage, ...wrapPages(nextPageElements, height)];
+  const nextPage = wrap(nodes, height);
+  if (nextPage.length === 0) return nodes;
+  return [...nodes, ...wrapPages(nextPage, height)];
 }
 
 const wrapPage = (page, height) => {
   if (!page) return [];
-  return wrapPages(cloneRecursively(page), height);
+  return wrapPages([cloneRecursively(page)], height);
 }
 
 export default wrapPage;

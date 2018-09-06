@@ -12,7 +12,7 @@ describe('page-wrapping', () => {
     const input = node({ left: 0, top: 0, width: 100, height: 100 });
     const result = wrapPages(input, 200);
 
-    expect(result[0][0]).not.toEqual(input);
+    expect(result[0]).not.toEqual(input);
   });
 
   test('Should not edit passed input', () => {
