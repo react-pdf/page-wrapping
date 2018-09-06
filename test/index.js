@@ -1,5 +1,5 @@
 import node from './node';
-import wrapPages, { moveNodes } from '../index';
+import wrapPages from '../index';
 
 describe('page-wrapping', () => {
   test('Wrap should return empty array if no nodes passed', () => {
@@ -8,292 +8,299 @@ describe('page-wrapping', () => {
     expect(result).toHaveLength(0);
   });
 
-  test('Wrap should return empty array if empty nodes passed', () => {
-    const result = wrapPages([], 200);
-
-    expect(result).toHaveLength(0);
-  });
-
   test('Wrap should return copy of input node', () => {
-    const input = node({ x: 0, y: 0, width: 100, height: 100 });
+    const input = node({ left: 0, top: 0, width: 100, height: 100 });
     const result = wrapPages(input, 200);
 
     expect(result[0][0]).not.toEqual(input);
   });
 
   test('Should not edit passed input', () => {
-    const input = node({ x: 20, y: 20, width: 100, height: 100 });
+    const input = node({ left: 20, top: 20, width: 100, height: 100 });
     const result = wrapPages(input, 60);
 
-    expect(input.x).toBe(20);
-    expect(input.y).toBe(20);
+    expect(input.left).toBe(20);
+    expect(input.top).toBe(20);
     expect(input.width).toBe(100);
     expect(input.height).toBe(100);
   });
 
   test('Should wrap single object on bigger space', () => {
-    const result = wrapPages(node({ x: 10, y: 10, width: 100, height: 100 }), 200);
+    const page = node({ left: 10, top: 10, width: 100, height: 100 });
+    const result = wrapPages(page, 200);
 
-    expect(result[0][0].x).toBe(10);
-    expect(result[0][0].y).toBe(10);
-    expect(result[0][0].width).toBe(100);
-    expect(result[0][0].height).toBe(100);
+    expect(result[0].left).toBe(10);
+    expect(result[0].top).toBe(10);
+    expect(result[0].width).toBe(100);
+    expect(result[0].height).toBe(100);
   });
 
   test('Should wrap single object on smaller space', () => {
-    const result = wrapPages(node({ x: 20, y: 20, width: 100, height: 100 }), 60);
+    const page = node({ left: 20, top: 20, width: 100, height: 100 });
+    const result = wrapPages(page, 60);
 
-    expect(result[0][0].x).toBe(20);
-    expect(result[0][0].y).toBe(20);
-    expect(result[0][0].width).toBe(100);
-    expect(result[0][0].height).toBe(40);
-    expect(result[1][0].x).toBe(20);
-    expect(result[1][0].y).toBe(0);
-    expect(result[1][0].width).toBe(100);
-    expect(result[1][0].height).toBe(60);
+    expect(result[0].left).toBe(20);
+    expect(result[0].top).toBe(20);
+    expect(result[0].width).toBe(100);
+    expect(result[0].height).toBe(40);
+    expect(result[1].left).toBe(20);
+    expect(result[1].top).toBe(0);
+    expect(result[1].width).toBe(100);
+    expect(result[1].height).toBe(60);
   });
 
   test('Should wrap single object on smaller space in many pieces', () => {
-    const result = wrapPages(node({ x: 20, y: 20, width: 100, height: 100 }), 40);
+    const page = node({ left: 20, top: 20, width: 100, height: 100 });
+    const result = wrapPages(page, 40);
 
     expect(result).toHaveLength(3);
-    expect(result[0][0].x).toBe(20);
-    expect(result[0][0].y).toBe(20);
-    expect(result[0][0].width).toBe(100);
-    expect(result[0][0].height).toBe(20);
-    expect(result[1][0].x).toBe(20);
-    expect(result[1][0].y).toBe(0);
-    expect(result[1][0].width).toBe(100);
-    expect(result[1][0].height).toBe(40);
-    expect(result[2][0].x).toBe(20);
-    expect(result[2][0].y).toBe(0);
-    expect(result[2][0].width).toBe(100);
-    expect(result[2][0].height).toBe(40);
-  });
-
-  test('Should wrap single object outside first page', () => {
-    const result = wrapPages(node({ x: 20, y: 80, width: 100, height: 10 }), 60);
-
-    expect(result[0]).toHaveLength(0);
-    expect(result[1][0].x).toBe(20);
-    expect(result[1][0].y).toBe(20);
-    expect(result[1][0].width).toBe(100);
-    expect(result[1][0].height).toBe(10);
+    expect(result[0].left).toBe(20);
+    expect(result[0].top).toBe(20);
+    expect(result[0].width).toBe(100);
+    expect(result[0].height).toBe(20);
+    expect(result[1].left).toBe(20);
+    expect(result[1].top).toBe(0);
+    expect(result[1].width).toBe(100);
+    expect(result[1].height).toBe(40);
+    expect(result[2].left).toBe(20);
+    expect(result[2].top).toBe(0);
+    expect(result[2].width).toBe(100);
+    expect(result[2].height).toBe(40);
   });
 
   test('Should wrap many horizontal aligned object on bigger space', () => {
-    const result = wrapPages([
-      node({ x: 0, y: 10, width: 50, height: 100 }),
-      node({ x: 50, y: 10, width: 50, height: 100 })
-    ], 200);
+    const page = node({ left: 0, top: 0, width: 100, height: 100 });
+    const child1 = node({ left: 0, top: 10, width: 50, height: 100 });
+    const child2 = node({ left: 50, top: 10, width: 50, height: 100 });
 
-    expect(result[0][0].x).toBe(0);
-    expect(result[0][0].y).toBe(10);
-    expect(result[0][0].width).toBe(50);
-    expect(result[0][0].height).toBe(100);
-    expect(result[0][1].x).toBe(50);
-    expect(result[0][1].y).toBe(10);
-    expect(result[0][1].width).toBe(50);
-    expect(result[0][1].height).toBe(100);
+    page.appendChild(child1);
+    page.appendChild(child2);
+
+    const result = wrapPages(page, 200);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].children).toHaveLength(2);
+    expect(result[0].children[0].left).toBe(0);
+    expect(result[0].children[0].top).toBe(10);
+    expect(result[0].children[0].width).toBe(50);
+    expect(result[0].children[0].height).toBe(100);
+    expect(result[0].children[1].left).toBe(50);
+    expect(result[0].children[1].top).toBe(10);
+    expect(result[0].children[1].width).toBe(50);
+    expect(result[0].children[1].height).toBe(100);
   });
 
   test('Should wrap many horizontal aligned object on smaller space', () => {
-    const result = wrapPages([
-      node({ x: 0, y: 10, width: 50, height: 100 }),
-      node({ x: 50, y: 10, width: 50, height: 100 })
-    ], 70);
+    const page = node({ left: 0, top: 0, width: 100, height: 100 });
+    const child1 = node({ left: 0, top: 10, width: 50, height: 100 });
+    const child2 = node({ left: 50, top: 10, width: 50, height: 100 });
 
-    expect(result[0][0].x).toBe(0);
-    expect(result[0][0].y).toBe(10);
-    expect(result[0][0].width).toBe(50);
-    expect(result[0][0].height).toBe(60);
-    expect(result[0][1].x).toBe(50);
-    expect(result[0][1].y).toBe(10);
-    expect(result[0][1].width).toBe(50);
-    expect(result[0][1].height).toBe(60);
-    expect(result[1][0].x).toBe(0);
-    expect(result[1][0].y).toBe(0);
-    expect(result[1][0].width).toBe(50);
-    expect(result[1][0].height).toBe(40);
-    expect(result[1][1].x).toBe(50);
-    expect(result[1][1].y).toBe(0);
-    expect(result[1][1].width).toBe(50);
-    expect(result[1][1].height).toBe(40);
+    page.appendChild(child1);
+    page.appendChild(child2);
+
+    const result = wrapPages(page, 70);
+
+    expect(result).toHaveLength(2);
+    expect(result[0].children[0].left).toBe(0);
+    expect(result[0].children[0].top).toBe(10);
+    expect(result[0].children[0].width).toBe(50);
+    expect(result[0].children[0].height).toBe(60);
+    expect(result[0].children[1].left).toBe(50);
+    expect(result[0].children[1].top).toBe(10);
+    expect(result[0].children[1].width).toBe(50);
+    expect(result[0].children[1].height).toBe(60);
+    expect(result[1].children[0].left).toBe(0);
+    expect(result[1].children[0].top).toBe(0);
+    expect(result[1].children[0].width).toBe(50);
+    expect(result[1].children[0].height).toBe(40);
+    expect(result[1].children[1].left).toBe(50);
+    expect(result[1].children[1].top).toBe(0);
+    expect(result[1].children[1].width).toBe(50);
+    expect(result[1].children[1].height).toBe(40);
   });
 
-  test('Should break element on its own', () => {
-    const result = wrapPages(node({ x: 0, y: 10, width: 50, height: 50, break: true }), 70);
+  test('Should break element', () => {
+    const parent = node({ left: 0, top: 0, width: 100, height: 120 });
+    const child1 = node({ left: 0, top: 10, width: 100, height: 50 });
+    const child2 = node({ left: 0, top: 60, width: 100, height: 20, break: true });
+    const child3 = node({ left: 0, top: 80, width: 100, height: 40 });
 
-    expect(result[0]).toHaveLength(0);
-    expect(result[1][0].x).toBe(0);
-    expect(result[1][0].y).toBe(0);
-    expect(result[1][0].width).toBe(50);
-    expect(result[1][0].height).toBe(50);
-  });
+    parent.appendChild(child1);
+    parent.appendChild(child2);
+    parent.appendChild(child3);
 
-  test('Should break element with others', () => {
-    const result = wrapPages([
-      node({ x: 0, y: 10, width: 100, height: 50 }),
-      node({ x: 0, y: 60, width: 100, height: 20, break: true }),
-      node({ x: 0, y: 80, width: 100, height: 40 })
-    ], 70);
+    const result = wrapPages(parent, 70);
 
-    expect(result[0]).toHaveLength(1);
-    expect(result[0][0].x).toBe(0);
-    expect(result[0][0].y).toBe(10);
-    expect(result[0][0].width).toBe(100);
-    expect(result[0][0].height).toBe(50);
-    expect(result[1]).toHaveLength(2);
-    expect(result[1][0].x).toBe(0);
-    expect(result[1][0].y).toBe(0);
-    expect(result[1][0].width).toBe(100);
-    expect(result[1][0].height).toBe(20);
-    expect(result[1][1].x).toBe(0);
-    expect(result[1][1].y).toBe(20);
-    expect(result[1][1].width).toBe(100);
-    expect(result[1][1].height).toBe(40);
+    expect(result).toHaveLength(2);
+
+    expect(result[0].left).toBe(0);
+    expect(result[0].top).toBe(0);
+    expect(result[0].width).toBe(100);
+    expect(result[0].height).toBe(70);
+    expect(result[0].children).toHaveLength(1);
+
+    expect(result[1].left).toBe(0);
+    expect(result[1].top).toBe(0);
+    expect(result[1].width).toBe(100);
+    expect(result[1].height).toBe(50);
+
   });
 
   test('Should ignore wrap flag if element should not split', () => {
-    const result = wrapPages(node({ x: 10, y: 10, width: 100, height: 100, wrap: false }), 200);
+    const page = node({ left: 10, top: 10, width: 100, height: 100, wrap: false });
+    const result = wrapPages(page, 200);
 
-    expect(result[0][0].x).toBe(10);
-    expect(result[0][0].y).toBe(10);
-    expect(result[0][0].width).toBe(100);
-    expect(result[0][0].height).toBe(100);
+    expect(result[0].left).toBe(10);
+    expect(result[0].top).toBe(10);
+    expect(result[0].width).toBe(100);
+    expect(result[0].height).toBe(100);
   });
 
   test('Should not wrap element with flag as false', () => {
-    const result = wrapPages([
-      node({ x: 10, y: 10, width: 100, height: 70 }),
-      node({ x: 10, y: 80, width: 100, height: 70, wrap: false }),
-    ], 100);
+    const page = node({ left: 0, top: 0, width: 110, height: 150 });
+    const child1 = node({ left: 10, top: 10, width: 100, height: 70 });
+    const child2 = node({ left: 10, top: 80, width: 100, height: 70, wrap: false });
 
-    expect(result[0]).toHaveLength(1);
-    expect(result[0][0].x).toBe(10);
-    expect(result[0][0].y).toBe(10);
-    expect(result[0][0].width).toBe(100);
-    expect(result[0][0].height).toBe(70);
-    expect(result[1]).toHaveLength(1);
-    expect(result[1][0].x).toBe(10);
-    expect(result[1][0].y).toBe(0);
-    expect(result[1][0].width).toBe(100);
-    expect(result[1][0].height).toBe(70);
+    page.appendChild(child1);
+    page.appendChild(child2);
+
+    const result = wrapPages(page, 100);
+
+    expect(result).toHaveLength(2);
+    expect(result[0].children).toHaveLength(1);
+    expect(result[0].children[0].left).toBe(10);
+    expect(result[0].children[0].top).toBe(10);
+    expect(result[0].children[0].width).toBe(100);
+    expect(result[0].children[0].height).toBe(70);
+    expect(result[1].children).toHaveLength(1);
+    expect(result[1].children[0].left).toBe(10);
+    expect(result[1].children[0].top).toBe(0);
+    expect(result[1].children[0].width).toBe(100);
+    expect(result[1].children[0].height).toBe(70);
   });
 
   test('Should repeat fixed elements in all pages', () => {
-    const result = wrapPages([
-      node({ x: 10, y: 10, width: 100, height: 10, fixed: true }),
-      node({ x: 10, y: 20, width: 100, height: 130 }),
-    ], 60);
+    const page = node({ left: 0, top: 0, width: 110, height: 120 });
+    const child1 = node({ left: 10, top: 10, width: 100, height: 10, fixed: true });
+    const child2 = node({ left: 10, top: 20, width: 100, height: 120 });
 
-    expect(result[0]).toHaveLength(2);
-    expect(result[0][0].x).toBe(10);
-    expect(result[0][0].y).toBe(10);
-    expect(result[0][0].width).toBe(100);
-    expect(result[0][0].height).toBe(10);
-    expect(result[0][0].fixed).toBe(true);
-    expect(result[1]).toHaveLength(2);
-    expect(result[1][0].x).toBe(10);
-    expect(result[1][0].y).toBe(10);
-    expect(result[1][0].width).toBe(100);
-    expect(result[1][0].height).toBe(10);
-    expect(result[1][0].fixed).toBe(true);
+    page.appendChild(child1);
+    page.appendChild(child2);
+
+    const result = wrapPages(page, 60);
+
+    expect(result).toHaveLength(2);
+    expect(result[0].children).toHaveLength(2);
+    expect(result[0].children[0].left).toBe(10);
+    expect(result[0].children[0].top).toBe(10);
+    expect(result[0].children[0].width).toBe(100);
+    expect(result[0].children[0].height).toBe(10);
+    expect(result[0].children[0].fixed).toBe(true);
+    expect(result[1].children).toHaveLength(2);
+    expect(result[1].children[0].left).toBe(10);
+    expect(result[1].children[0].top).toBe(10);
+    expect(result[1].children[0].width).toBe(100);
+    expect(result[1].children[0].height).toBe(10);
+    expect(result[1].children[0].fixed).toBe(true);
   });
 
   test('Should call onNodeWrap on node if passed', () => {
     const onNodeWrap = jest.fn();
-    const result = wrapPages([
-      node({ x: 10, y: 10, width: 100, height: 10 }),
-      node({ x: 10, y: 20, width: 100, height: 40, onNodeWrap }),
-    ], 60);
+
+    const page = node({ left: 0, top: 0, width: 110, height: 60, onNodeWrap});
+    const child1 = node({ left: 10, top: 10, width: 100, height: 10 });
+    const child2 = node({ left: 10, top: 20, width: 100, height: 40 });
+
+    page.appendChild(child1);
+    page.appendChild(child2);
+
+    const result = wrapPages(page, 60);
 
     expect(onNodeWrap.mock.calls.length).toBe(1);
   });
 
   test('Should call onNodeWrap one time per output page', () => {
     const onNodeWrap = jest.fn();
-    const result = wrapPages([
-      node({ x: 10, y: 10, width: 100, height: 200, onNodeWrap }),
-    ], 60);
+
+    const page = node({ left: 10, top: 10, width: 100, height: 200, onNodeWrap });
+    const result = wrapPages(page, 60);
 
     expect(onNodeWrap.mock.calls.length).toBe(4);
   });
 
   test('Should break element if not enough space ahead', () => {
-    const result = wrapPages([
-      node({ x: 10, y: 0, width: 100, height: 10 }),
-      node({ x: 10, y: 10, width: 100, height: 30, minPresenceAhead: 30 }),
-      node({ x: 10, y: 40, width: 100, height: 40 }),
-    ], 60);
+    const page = node({ left: 0, top: 0, width: 110, height: 80 });
+    const child1 = node({ left: 10, top: 0, width: 100, height: 10 });
+    const child2 = node({ left: 10, top: 10, width: 100, height: 30, minPresenceAhead: 30 });
+    const child3 = node({ left: 10, top: 40, width: 100, height: 40 });
 
-    expect(result[0]).toHaveLength(1);
-    expect(result[0][0].x).toBe(10);
-    expect(result[0][0].y).toBe(0);
-    expect(result[0][0].width).toBe(100);
-    expect(result[0][0].height).toBe(10);
-    expect(result[1]).toHaveLength(2);
-    expect(result[1][0].x).toBe(10);
-    expect(result[1][0].y).toBe(0);
-    expect(result[1][0].width).toBe(100);
-    expect(result[1][0].height).toBe(30);
-    expect(result[1][1].x).toBe(10);
-    expect(result[1][1].y).toBe(30);
-    expect(result[1][1].width).toBe(100);
-    expect(result[1][1].height).toBe(30);
+    page.appendChild(child1);
+    page.appendChild(child2);
+    page.appendChild(child3);
+
+    const result = wrapPages(page, 60);
+
+    expect(result).toHaveLength(2);
+    expect(result[0].children).toHaveLength(1);
+    expect(result[0].children[0].left).toBe(10);
+    expect(result[0].children[0].top).toBe(0);
+    expect(result[0].children[0].width).toBe(100);
+    expect(result[0].children[0].height).toBe(10);
+    expect(result[1].children).toHaveLength(2);
+    expect(result[1].children[0].left).toBe(10);
+    expect(result[1].children[0].top).toBe(0);
+    expect(result[1].children[0].width).toBe(100);
+    expect(result[1].children[0].height).toBe(30);
   });
 
   test('Should wrap nested object on bigger space', () => {
-    const result = wrapPages(
-      node({ x: 10, y: 10, width: 100, height: 100, children: [
-        node({ x: 10, y: 10, width: 100, height: 50 })
-      ]})
-    , 200);
+    const page = node({ left: 0, top: 0, width: 100, height: 110 });
+    const parent = node({ left: 10, top: 10, width: 100, height: 100 });
+    const child = node({ left: 10, top: 0, width: 100, height: 70 });
 
-    expect(result[0][0].children).toHaveLength(1);
-    expect(result[0][0].x).toBe(10);
-    expect(result[0][0].y).toBe(10);
-    expect(result[0][0].width).toBe(100);
-    expect(result[0][0].height).toBe(100);
-    expect(result[0][0].children[0].x).toBe(10);
-    expect(result[0][0].children[0].y).toBe(10);
-    expect(result[0][0].children[0].width).toBe(100);
-    expect(result[0][0].children[0].height).toBe(50);
+    page.appendChild(parent);
+    parent.appendChild(child);
+
+    const result = wrapPages(page, 200);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].children[0].children).toHaveLength(1);
+    expect(result[0].children[0].left).toBe(10);
+    expect(result[0].children[0].top).toBe(10);
+    expect(result[0].children[0].width).toBe(100);
+    expect(result[0].children[0].height).toBe(100);
+    expect(result[0].children[0].children[0].left).toBe(10);
+    expect(result[0].children[0].children[0].top).toBe(0);
+    expect(result[0].children[0].children[0].width).toBe(100);
+    expect(result[0].children[0].children[0].height).toBe(70);
   });
 
   test('Should wrap single object on smaller space', () => {
-    const result = wrapPages(
-      node({ x: 10, y: 10, width: 100, height: 100, children: [
-        node({ x: 10, y: 10, width: 100, height: 70 })
-      ]})
-    , 70);
+    const page = node({ left: 0, top: 0, width: 100, height: 110 });
+    const parent = node({ left: 10, top: 10, width: 100, height: 100 });
+    const child = node({ left: 10, top: 0, width: 100, height: 70 });
 
-    expect(result[0][0].x).toBe(10);
-    expect(result[0][0].y).toBe(10);
-    expect(result[0][0].width).toBe(100);
-    expect(result[0][0].height).toBe(60);
-    expect(result[0][0].children[0].x).toBe(10);
-    expect(result[0][0].children[0].y).toBe(10);
-    expect(result[0][0].children[0].width).toBe(100);
-    expect(result[0][0].children[0].height).toBe(60);
-    expect(result[1][0].x).toBe(10);
-    expect(result[1][0].y).toBe(0);
-    expect(result[1][0].width).toBe(100);
-    expect(result[1][0].height).toBe(40);
-    expect(result[1][0].children[0].x).toBe(10);
-    expect(result[1][0].children[0].y).toBe(0);
-    expect(result[1][0].children[0].width).toBe(100);
-    expect(result[1][0].children[0].height).toBe(10);
-  });
+    page.appendChild(parent);
+    parent.appendChild(child);
 
-  test('Should move nodes up', () => {
-    const input = node({ x: 10, y: 40, width: 100, height: 100, children: [
-      node({ x: 10, y: 50, width: 100, height: 50 })
-    ]});
+    const result = wrapPages(page, 70);
 
-    moveNodes(input, -30);
-
-    expect(input.y).toBe(10);
-    expect(input.children[0].y).toBe(20);
+    expect(result).toHaveLength(2);
+    expect(result[0].children[0].left).toBe(10);
+    expect(result[0].children[0].top).toBe(10);
+    expect(result[0].children[0].width).toBe(100);
+    expect(result[0].children[0].height).toBe(60);
+    expect(result[0].children[0].children[0].left).toBe(10);
+    expect(result[0].children[0].children[0].top).toBe(0);
+    expect(result[0].children[0].children[0].width).toBe(100);
+    expect(result[0].children[0].children[0].height).toBe(60);
+    expect(result[1].children[0].left).toBe(10);
+    expect(result[1].children[0].top).toBe(0);
+    expect(result[1].children[0].width).toBe(100);
+    expect(result[1].children[0].height).toBe(40);
+    expect(result[1].children[0].children[0].left).toBe(10);
+    expect(result[1].children[0].children[0].top).toBe(0);
+    expect(result[1].children[0].children[0].width).toBe(100);
+    expect(result[1].children[0].children[0].height).toBe(10);
   });
 });

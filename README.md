@@ -9,7 +9,7 @@ import wrap from 'page-wrapping';
 
 // Create node instance.
 // It can be whatever type of construction you want, but should always if support Node interface (see below).
-const node = Node({ x: 20, y: 20, width: 100, height: 100 });
+const node = Node({ left: 20, top: 20, width: 100, height: 100 });
 
 // Start page wrapping process.
 // You should pass as first argument the page children (in this case only one node),
@@ -17,23 +17,27 @@ const node = Node({ x: 20, y: 20, width: 100, height: 100 });
 wrap([node], 40);
 
 // [
-//   [{ x: 20, y: 20, width: 100, height: 20 }],
-//   [{ x: 20, y: 0, width: 100, height: 40 }],
-//   [{ x: 20, y: 0, width: 100, height: 40 }]
+//   { left: 20, top: 20, width: 100, height: 20 },
+//   { left: 20, top: 0, width: 100, height: 40 },
+//   { left: 20, top: 0, width: 100, height: 40 }
 // ]
 ```
 
 ## Node interface
 
-| Property        | Description                                           | Type     |
-| --------------- | ----------------------------------------------------- | -------- |
-| x               | Node x coordinate                                     | Number   |
-| y               | Node y coordinate                                     | Number   |
-| width           | Node width                                            | Number   |
-| height          | Node height                                           | Number   |
-| wrap            | Whether a node should be able to split in two or more | Boolean  |
-| break           | Whether a node should create a page break             | Boolean  |
-| fixed           | Whether a node should repeat throughout all pages     | Boolean  |
-| clone           | Returns a copy of target node                         | Function |
-| onNodeWrap      | Callback before element wrap                          | Function |
-| presenceAhead   | Returns node presence ahead given available height    | Function |
+| Property        | Description                                           | Type        |
+| --------------- | ----------------------------------------------------- | ----------- |
+| left            | Node x coordinate                                     | Number      |
+| top             | Node y coordinate                                     | Number      |
+| width           | Node width                                            | Number      |
+| height          | Node height                                           | Number      |
+| wrap            | Whether a node should be able to split in two or more | Boolean     |
+| break           | Whether a node should create a page break             | Boolean     |
+| fixed           | Whether a node should repeat throughout all pages     | Boolean     |
+| parent          | Node pointer to parent                                | Node        |
+| children        | Children nodes                                        | Array<Node> |
+| appendChild     | Add node as children                                  | Function    |
+| remove          | Detach node from paren                                | Function    |
+| clone           | Returns a copy of target node                         | Function    |
+| onNodeWrap      | Callback before element wrap                          | Function    |
+| onNodeSplit     | Callback after element splitted in two                | Function    |
