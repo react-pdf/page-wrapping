@@ -75,7 +75,7 @@ export const wrap = (elements, height) => {
       const newFutureElements = futureElements.map(element => cloneRecursively(element));
 
       clone.top = 0;
-      element.break = false;
+      clone.break = false;
 
       nextPageElements.push(clone, ...newFutureElements);
       elementsToBeRemoved.push(element, ...futureElements);
@@ -111,7 +111,16 @@ export const wrap = (elements, height) => {
 // Wrap nodes tree in equal sized subpages
 const wrapPages = (nodes, height) => {
   const nextPage = wrap(nodes, height);
+
   if (nextPage.length === 0) return nodes;
+
+  const hasOnlyFixedChilds = (
+    nextPage[0].children.length > 0 &&
+    nextPage[0].children.every(c => c.fixed)
+  );
+
+  if (hasOnlyFixedChilds) return nodes;
+
   return [...nodes, ...wrapPages(nextPage, height)];
 }
 
