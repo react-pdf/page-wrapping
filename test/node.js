@@ -7,7 +7,7 @@ const node = (params) => ({
   break: params.break || false,
   fixed: params.fixed || false,
   children: params.children || [],
-  onNodeWrap: params.onNodeWrap || null,
+  nodeWillWrap: params.nodeWillWrap || null,
   minPresenceAhead: params.minPresenceAhead || null,
   wrap: params.wrap === undefined ? true : params.wrap,
   clone() {
@@ -19,7 +19,7 @@ const node = (params) => ({
       break: this.break,
       fixed: this.fixed,
       wrap: this.wrap,
-      onNodeWrap: this.onNodeWrap,
+      nodeWillWrap: this.nodeWillWrap,
       minPresenceAhead: this.minPresenceAhead
     });
   },
@@ -42,6 +42,9 @@ const node = (params) => ({
   },
   remove() {
     this.parent.removeChild(this);
+  },
+  isEmpty() {
+    return false;
   }
 });
 

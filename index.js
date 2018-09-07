@@ -30,14 +30,14 @@ const cloneRecursively = (node) => {
 }
 
 // Wrap nodes tree in fixed height page, and returns exceedings separately.
-export const wrap = (elements, height) => {
+export const wrap = (elements, height, pageNumber) => {
   const nextPageElements = [];
   const elementsToBeRemoved = [];
 
   for (var i = 0; i < elements.length; i++) {
     const element = elements[i];
 
-    if (element.onNodeWrap) element.onNodeWrap();
+    if (element.nodeWillWrap) element.nodeWillWrap({ pageNumber });
 
     const futureElements = elements.slice(i + 1);
     const isElementOutside = height <= element.top;
@@ -109,24 +109,24 @@ export const wrap = (elements, height) => {
 }
 
 // Wrap nodes tree in equal sized subpages
-const wrapPages = (nodes, height) => {
-  const nextPage = wrap(nodes, height);
+const wrapPages = (nodes, height, pageIndex) => {
+  const nextPage = wrap(nodes, height, pageIndex++)[0];
 
-  if (nextPage.length === 0) return nodes;
+  if (!nextPage || nextPage.isEmpty()) return nodes;
 
   const hasOnlyFixedChilds = (
-    nextPage[0].children.length > 0 &&
-    nextPage[0].children.every(c => c.fixed)
+    nextPage.children.length > 0 &&
+    nextPage.children.every(c => c.fixed)
   );
 
   if (hasOnlyFixedChilds) return nodes;
 
-  return [...nodes, ...wrapPages(nextPage, height)];
+  return [...nodes, ...wrapPages([nextPage], height, pageIndex)];
 }
 
-const wrapPage = (page, height) => {
+const wrapPage = (page, height, pageIndex = 0) => {
   if (!page) return [];
-  return wrapPages([cloneRecursively(page)], height);
+  return wrapPages([cloneRecursively(page)], height, pageIndex);
 }
 
 export default wrapPage;

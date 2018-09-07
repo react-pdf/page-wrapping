@@ -39,5 +39,5 @@ wrap([node], 40);
 | appendChild     | Add node as children                                  | Function    |
 | remove          | Detach node from paren                                | Function    |
 | clone           | Returns a copy of target node                         | Function    |
-| onNodeWrap      | Callback before element wrap                          | Function    |
+| nodeWillWrap    | Callback before element wrap                          | Function    |
 | onNodeSplit     | Callback after element splitted in two                | Function    |

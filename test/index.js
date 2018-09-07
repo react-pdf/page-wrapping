@@ -204,10 +204,10 @@ describe('page-wrapping', () => {
     expect(result[1].children[0].fixed).toBe(true);
   });
 
-  test('Should call onNodeWrap on node if passed', () => {
-    const onNodeWrap = jest.fn();
+  test('Should call nodeWillWrap on node if passed', () => {
+    const nodeWillWrap = jest.fn();
 
-    const page = node({ left: 0, top: 0, width: 110, height: 60, onNodeWrap});
+    const page = node({ left: 0, top: 0, width: 110, height: 60, nodeWillWrap});
     const child1 = node({ left: 10, top: 10, width: 100, height: 10 });
     const child2 = node({ left: 10, top: 20, width: 100, height: 40 });
 
@@ -216,16 +216,16 @@ describe('page-wrapping', () => {
 
     const result = wrapPages(page, 60);
 
-    expect(onNodeWrap.mock.calls.length).toBe(1);
+    expect(nodeWillWrap.mock.calls.length).toBe(1);
   });
 
-  test('Should call onNodeWrap one time per output page', () => {
-    const onNodeWrap = jest.fn();
+  test('Should call nodeWillWrap one time per output page', () => {
+    const nodeWillWrap = jest.fn();
 
-    const page = node({ left: 10, top: 10, width: 100, height: 200, onNodeWrap });
+    const page = node({ left: 10, top: 10, width: 100, height: 200, nodeWillWrap });
     const result = wrapPages(page, 60);
 
-    expect(onNodeWrap.mock.calls.length).toBe(4);
+    expect(nodeWillWrap.mock.calls.length).toBe(4);
   });
 
   test('Should break element if not enough space ahead', () => {
