@@ -40,4 +40,5 @@ wrap([node], 40);
 | remove          | Detach node from paren                                | Function    |
 | clone           | Returns a copy of target node                         | Function    |
 | nodeWillWrap    | Callback before element wrap                          | Function    |
-| onNodeSplit     | Callback after element splitted in two                | Function    |
+| onNodeSplit     | Callback after element is split in two                | Function    |
+| isEmpty         | Returns if node is empty or not                       | Function    |
