@@ -1,21 +1,26 @@
 {
   "name": "page-wrapping",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "./dist/page-wrapping.cjs.js",
   "module": "./dist/page-wrapping.es.js",
   "author": "Diego Muracciole <diegomuracciole@gmail.com>",
   "license": "MIT",
   "scripts": {
     "test": "jest",
-    "build": "rollup -c",
-    "watch": "rollup -c -w"
+    "watch": "rollup -c -w",
+    "prepublish": "npm run build",
+    "build": "rimraf ./dist && rollup -c"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-preset-env": "^1.7.0",
     "jest": "^23.5.0",
+    "rimraf": "^2.6.2",
     "rollup": "^0.52.2",
     "rollup-plugin-babel": "^2.7.1"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
