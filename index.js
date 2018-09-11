@@ -73,12 +73,13 @@ export const wrap = (elements, height, pageNumber) => {
     if (elementShouldBreak) {
       const clone = cloneRecursively(element);
       const newFutureElements = futureElements.map(element => cloneRecursively(element));
+      const nonFixedElements = futureElements.filter(element => !element.fixed);
 
       clone.top = 0;
       clone.break = false;
 
       nextPageElements.push(clone, ...newFutureElements);
-      elementsToBeRemoved.push(element, ...futureElements);
+      elementsToBeRemoved.push(element, ...nonFixedElements);
       break;
     }
 
