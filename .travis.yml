@@ -1,0 +1,16 @@
+language: node_js
+
+node_js:
+ - '10'
+
+os:
+  - linux
+
+cache:
+  yarn: true
+  directories:
+  - node_modules
+
+install: yarn --frozen-lockfile
+
+script: yarn test
