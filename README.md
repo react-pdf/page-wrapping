@@ -1,6 +1,8 @@
 # page-wrapping
+[![npm](https://img.shields.io/npm/v/page-wrapping.svg)](https://www.npmjs.com/package/page-wrapping)
+[![Travis](https://img.shields.io/travis/react-pdf/page-wrapping.svg)](https://travis-ci.org/react-pdf/page-wrapping)
+
 Generic page wrapping algorithm proposal.
-Intended to be used in react-pdf in the near future
 
 ## How it works
 
