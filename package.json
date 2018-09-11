@@ -1,6 +1,6 @@
 {
   "name": "page-wrapping",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "./dist/page-wrapping.cjs.js",
   "module": "./dist/page-wrapping.es.js",
   "author": "Diego Muracciole <diegomuracciole@gmail.com>",
