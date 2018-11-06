@@ -15,15 +15,13 @@ const getESM = override => Object.assign({}, esm, override)
 
 const config = {
   input: './index.js',
-  output: [
-    getESM({ file: './dist/page-wrapping.es.js' }),
-    getCJS({ file: './dist/page-wrapping.cjs.js' }),
-  ],
+  output: [getESM({ file: './dist/page-wrapping.es.js' }), getCJS({ file: './dist/page-wrapping.cjs.js' })],
   plugins: [
     babel({
       babelrc: false,
-      presets: [["env", { modules: false, loose: true }]],
-      plugins: ["external-helpers"],
+      runtimeHelpers: true,
+      presets: [['env', { modules: false, loose: true }]],
+      plugins: ['external-helpers', 'transform-runtime'],
       exclude: 'node_modules/**'
     })
   ]
