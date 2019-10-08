@@ -178,6 +178,23 @@ describe('page-wrapping', () => {
     expect(result[1].children[0].height).toBe(70)
   })
 
+  // For fixing https://github.com/diegomura/react-pdf/issues/600
+  test('Should ignore wrap=false flag if element does not fit on a full page after a break', async () => {
+    const page = node({ left: 0, top: 0, width: 110, height: 150, wrap: false })
+
+    const result = await wrapPages(page, 100)
+
+    expect(result).toHaveLength(2)
+    expect(result[0].left).toBe(0)
+    expect(result[0].top).toBe(0)
+    expect(result[0].width).toBe(110)
+    expect(result[0].height).toBe(100)
+    expect(result[1].left).toBe(0)
+    expect(result[1].top).toBe(0)
+    expect(result[1].width).toBe(110)
+    expect(result[1].height).toBe(50)
+  })
+
   test('Should repeat fixed elements in all pages', async () => {
     const page = node({ left: 0, top: 0, width: 110, height: 120 })
     const child1 = node({ left: 10, top: 10, width: 100, height: 10, fixed: true })
