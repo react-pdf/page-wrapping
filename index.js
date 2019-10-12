@@ -44,7 +44,8 @@ export const wrap = async (elements, height, pageNumber) => {
     const futureElements = elements.slice(i + 1)
     const isElementOutside = height <= element.top
     const elementShouldSplit = height < element.top + element.height
-    let elementShouldBreak = element.break || (!element.wrap && elementShouldSplit)
+    const elementFitsFullPageHeight = element.height <= height;
+    let elementShouldBreak = element.break || (!element.wrap && elementShouldSplit && elementFitsFullPageHeight)
 
     // If element is fixed, we add it both to the current page
     // and to all future pages to come.
