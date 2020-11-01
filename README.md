@@ -5,7 +5,7 @@
 
 Generic page wrapping algorithm proposal.
 
-> This is no longer used in react-pdf lastests versions
+> This is no longer used in react-pdf lastest versions
 
 ## How it works
 
