@@ -3,6 +3,8 @@
 [![npm](https://img.shields.io/npm/v/page-wrapping.svg)](https://www.npmjs.com/package/page-wrapping)
 [![Travis](https://img.shields.io/travis/react-pdf/page-wrapping.svg)](https://travis-ci.org/react-pdf/page-wrapping)
 
+> This package is no longer used in react-pdf latest versions
+
 Generic page wrapping algorithm proposal.
 
 ## How it works
